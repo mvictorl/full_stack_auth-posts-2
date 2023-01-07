@@ -1,0 +1,14 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: content-box;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.error-header {
+  color: red;
+}

@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  pg_db:
+    image: postgres
+    container_name: local_pgdb
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: nimda
+    volumes:
+      - local_pgdata:/var/lib/postgresql/data
+  pg_admin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: victor@ya.ru
+      PGADMIN_DEFAULT_PASSWORD: nimda
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+volumes:
+  local_pgdata:
+  pgadmin-data:
