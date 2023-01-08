@@ -21,7 +21,7 @@ import { useState } from "react"
 export default function Login() {
   const [email, setEmail] = useState("")
   const [password, setPass] = useState("")
-  const [rememberMe, setRememberMe] = useState(false)
+  const [remember, setRemember] = useState(false)
 
   const dispatch: AppDispatch = useDispatch()
 
@@ -30,7 +30,7 @@ export default function Login() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    dispatch(login({ email, password, rememberMe }))
+    dispatch(login({ email, password, remember }))
     // dispatch(rememberMe(remember))
     navigate(state ? state.from : "/")
   }
@@ -80,7 +80,7 @@ export default function Login() {
             control={
               <Checkbox
                 value="remember"
-                onChange={(e) => setRememberMe(!!e.target.value)}
+                onChange={(e) => setRemember(!!e.target.value)}
                 color="primary"
               />
             }

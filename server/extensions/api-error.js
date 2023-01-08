@@ -13,7 +13,7 @@ module.exports = class ApiError extends Error {
 		return new ApiError(401, 'User is not authorized (no Auth Header)')
 	}
 
-	static AccessTockenError() {
+	static AccessTokenError() {
 		return new ApiError(401, 'User is not authorized (no Access Token)')
 	}
 

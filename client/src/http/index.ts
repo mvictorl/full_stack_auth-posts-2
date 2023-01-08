@@ -2,7 +2,7 @@ import axios from 'axios'
 import { IAuthResponse } from '../models/IAuthResponse'
 
 // const API_URL: string = process.env.REACT_APP_API_URL || ''
-const API_URL: string = 'http://localhost:5000/api'
+const API_URL: string = process.env.REACT_APP_API_URL || ''
 const SELF_URL: string = process.env.REACT_APP_SELF_URL || ''
 
 export const $api = axios.create({
@@ -16,27 +16,32 @@ $api.interceptors.request.use(config => {
 })
 
 $api.interceptors.response.use(
-	config => config,
-	async error => {
-		const origRequest = error.config
+	res => res,
+	async err => {
+		const origRequest = err.config
 		if (
-			error.response.status === 401 &&
-			error.config &&
-			!error.config._isRetry
+			err.response.status === 401 &&
+			origRequest &&
+			!origRequest._isRetry
 		) {
 			origRequest._isRetry = true
 			try {
 				const res = await axios.get<IAuthResponse>(`${API_URL}/user/refresh`, {
 					withCredentials: true,
 				})
-				localStorage.setItem('bearer-token', res.data.accessToken)
-				return $api.request(origRequest)
+				if (res.data.accessToken) {
+					localStorage.setItem('bearer-token', res.data.accessToken)
+					return $api(origRequest)
+				} else {
+					localStorage.removeItem('bearer-token')
+				}
+				return $api(origRequest)
 			} catch (e) {
 				console.error('USER NOT AUTHORIZE', e)
 			}
 		}
 		localStorage.removeItem('bearer-token')
-		if (error.response.status !== 422) window.location.href = SELF_URL
-		return Promise.reject(error)
+		if (err.response.status !== 422) window.location.href = SELF_URL
+		return Promise.reject(err)
 	}
 )

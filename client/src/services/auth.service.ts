@@ -1,8 +1,8 @@
 import { $api } from "../http"
 import { IAuthResponse } from "../models/IAuthResponse"
 
-async function login(email: string, password: string): Promise<IAuthResponse> {
-  const response = await $api.post('/user/login', { email, password })
+async function login(email: string, password: string, remember: boolean): Promise<IAuthResponse> {
+  const response = await $api.post('/user/login', { email, password, remember })
   return response.data
 }
 

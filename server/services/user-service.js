@@ -113,38 +113,6 @@ class UserService {
 			throw ApiError.UnauthorizedUserError()
 		}
 
-		const userDto = await db.user.findUnique({
-			where: { id: userData.id },
-			select: {
-				id: true,
-				email: true,
-				name: true,
-				roles: true,
-				isActivated: true,
-			},
-		})
-
-		const tokens = tokenService.generatePairOfTokens({ ...userDto })
-		await tokenService.saveToken(userDto.id, tokens.refreshToken)
-
-		return { ...tokens, user: userDto }
-	}
-
-	async check(refreshToken) {
-		if (!refreshToken) return null
-
-		const userData = await tokenService.validateRefreshToken(refreshToken)
-		if (!userData) return null
-
-		const tokenFromDb = await db.token.findFirst({
-			where: { refreshToken },
-			select: {
-				id: true,
-				refreshToken: true,
-			},
-		})
-		if (!tokenFromDb) return null
-
 		try {
 			return await db.user.findUnique({
 				where: { id: userData.id },
@@ -155,20 +123,60 @@ class UserService {
 					roles: true,
 					isActivated: true,
 				},
-			}).then(async user => {
-				const tokens = tokenService.generatePairOfTokens({ ...user })
-				await tokenService.saveToken(user.id, tokens.refreshToken)
-
-				return { ...tokens, user }
-			}, err => {
-				console.error('DataBase error')
-				throw ApiError.DataBaseError('DB Error', err)
 			})
-		} catch (e) {
+				.then(async user => {
+					const tokens = tokenService.generatePairOfTokens({ ...user })
+					await tokenService.saveToken(user.id, tokens.refreshToken)
+					return { ...tokens, user }
+				}, err => {
+					console.error('DataBase error')
+					throw ApiError.DataBaseError('DB Error', err)
+				})
+		} catch (error) {
 			console.error('DB Error')
 			throw ApiError.DataBaseError('DB Error', e)
 		}
 	}
+
+	// async check(refreshToken) {
+	// 	if (!refreshToken) return null
+
+	// 	const userData = await tokenService.validateRefreshToken(refreshToken)
+	// 	if (!userData) return null
+
+	// 	const tokenFromDb = await db.token.findFirst({
+	// 		where: { refreshToken },
+	// 		select: {
+	// 			id: true,
+	// 			refreshToken: true,
+	// 		},
+	// 	})
+	// 	if (!tokenFromDb) return null
+
+	// 	try {
+	// 		return await db.user.findUnique({
+	// 			where: { id: userData.id },
+	// 			select: {
+	// 				id: true,
+	// 				email: true,
+	// 				name: true,
+	// 				roles: true,
+	// 				isActivated: true,
+	// 			},
+	// 		}).then(async user => {
+	// 			const tokens = tokenService.generatePairOfTokens({ ...user })
+	// 			await tokenService.saveToken(user.id, tokens.refreshToken)
+
+	// 			return { ...tokens, user }
+	// 		}, err => {
+	// 			console.error('DataBase error')
+	// 			throw ApiError.DataBaseError('DB Error', err)
+	// 		})
+	// 	} catch (e) {
+	// 		console.error('DB Error')
+	// 		throw ApiError.DataBaseError('DB Error', e)
+	// 	}
+	// }
 
 	async activate(code, refreshToken) {
 		const userData = await tokenService.validateRefreshToken(refreshToken)

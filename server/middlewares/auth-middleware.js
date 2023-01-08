@@ -12,7 +12,7 @@ function authUser(req, res, next) {
 
 		const accessTocken = authHeader.split(' ')[1]
 		if (!accessTocken) {
-			return next(ApiError.AccessTockenError())
+			return next(ApiError.AccessTokenError())
 		}
 
 		const userData = tokenService.validateAccessToken(accessTocken)

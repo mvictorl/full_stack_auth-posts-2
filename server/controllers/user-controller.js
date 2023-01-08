@@ -14,10 +14,10 @@ class UserController {
 			}
 			const { username, email, password } = req.body
 			const userData = await userService.registaration(username, email, password)
-			res.cookie('refreshToken', userData.refreshToken, {
-				httpOnly: true,
-				maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days as refresh token
-			})
+			// res.cookie('refreshToken', userData.refreshToken, {
+			// 	httpOnly: true,
+			// 	maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days as refresh token
+			// })
 			return res.json(userData)
 		} catch (e) {
 			next(e)
@@ -33,12 +33,14 @@ class UserController {
 				)
 			}
 
-			const { email, password } = req.body
+			const { email, password, remember } = req.body
 			const userData = await userService.login(email, password)
-			res.cookie('refreshToken', userData.refreshToken, {
-				httpOnly: true,
-				maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days as refresh token
-			})
+			if (remember) {
+				res.cookie('refreshToken', userData.refreshToken, {
+					httpOnly: true,
+					maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days as refresh token
+				})
+			}
 			return res.json(userData)
 		} catch (e) {
 			next(e)
@@ -48,9 +50,11 @@ class UserController {
 	async logout(req, res, next) {
 		try {
 			const { refreshToken } = req.cookies // Take the 'refreshToken' token from cookie
-			const data = await userService.logout(refreshToken) // Call 'logout' service function
-			res.clearCookie('refreshToken') // Delete the 'refreshToken' cookie
-			return res.json(data) // Return response to client
+			if (refreshToken) {
+				const data = await userService.logout(refreshToken) // Call 'logout' service function
+				res.clearCookie('refreshToken') // Delete the 'refreshToken' cookie
+				return res.json(data) // Return response to client
+			} return next()
 		} catch (e) {
 			next(e)
 		}
@@ -59,31 +63,40 @@ class UserController {
 	async refresh(req, res, next) {
 		try {
 			const { refreshToken } = req.cookies // Take the 'refreshToken' token from cookie
-			const userData = await userService.refresh(refreshToken)
-			res.cookie('refreshToken', userData.refreshToken, {
-				httpOnly: true,
-				maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days as refresh token
-			})
-			return res.json(userData)
+			if (refreshToken) {
+				const userData = await userService.refresh(refreshToken)
+				res.cookie('refreshToken', userData.refreshToken, {
+					httpOnly: true,
+					maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days as refresh token
+				})
+				return res.json(userData)
+			}
+			return res.json({})
+			// return next(ApiError.UnauthorizedUserError())
 		} catch (e) {
-			next(e)
+			next(ApiError.AccessTokenError())
 		}
 	}
 
 	async check(req, res, next) {
 		try {
 			const { refreshToken } = req.cookies // Take the 'refreshToken' token from cookie
-			const userData = await userService.check(refreshToken)
-			if (userData) {
-				res.cookie('refreshToken', userData.refreshToken, {
-					httpOnly: true,
-					maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days as refresh token
-				})
-			} else {
-				const data = await userService.logout(refreshToken) // Call 'logout' service function
-				res.clearCookie('refreshToken') // Delete the 'refreshToken' cookie
+			if (refreshToken) {
+				// +++++++++++++++++++++++++++++++++++++++++++++++++++
+				// const userData = await userService.check(refreshToken)
+				const userData = await userService.refresh(refreshToken)
+				if (userData) {
+					res.cookie('refreshToken', userData.refreshToken, {
+						httpOnly: true,
+						maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days as refresh token
+					})
+				} else {
+					const data = await userService.logout(refreshToken) // Call 'logout' service function
+					res.clearCookie('refreshToken') // Delete the 'refreshToken' cookie
+				}
+				return res.json(userData)
 			}
-			return res.json(userData)
+			return res.json({})
 		} catch (e) {
 			next(e)
 		}

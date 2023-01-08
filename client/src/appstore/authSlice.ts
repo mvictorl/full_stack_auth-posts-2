@@ -16,21 +16,20 @@ const initialState = {
 type loginProps = {
   email: string
   password: string
-  rememberMe: boolean
+  remember: boolean
 }
 export const login = createAsyncThunk(
   "auth/login",
-  async ({ email, password, rememberMe }: loginProps, { dispatch, rejectWithValue }) => {
+  async ({ email, password, remember }: loginProps, { dispatch, rejectWithValue }) => {
     dispatch(setMessage('Begin login API connection'))
     try {
-      const data = await AuthService.login(email, password)
+      const data = await AuthService.login(email, password, remember)
       dispatch(setMessage('Login API connection done'))
 
       if (!data.user || !data.accessToken) throw Error('Server error on Login')
-      else {
-        if (rememberMe) localStorage.setItem('bearer-token', data.accessToken)
-        return { currentUser: data.user }
-      }
+
+      localStorage.setItem('bearer-token', data.accessToken)
+      return { currentUser: data.user }
 
     } catch (error: any) {
       const message =
@@ -93,7 +92,10 @@ export const check = createAsyncThunk(
     try {
       const data = await AuthService.check()
 
-      if (!data.user || !data.accessToken) throw Error('Server error on Login')
+      if (!data.user || !data.accessToken) {
+        localStorage.removeItem('bearer-token')
+        throw Error('Server error on Login')
+      }
       else {
         localStorage.setItem('bearer-token', data.accessToken)
         return { currentUser: data.user }
@@ -106,7 +108,7 @@ export const check = createAsyncThunk(
         error.message ||
         error.toString()
       dispatch(setMessage(message))
-      return rejectWithValue(error)
+      return { currentUser: initialState.currentUser }
     }
   }
 )

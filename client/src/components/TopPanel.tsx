@@ -14,7 +14,7 @@ import { Adb as AdbIcon, Menu as MenuIcon } from "@mui/icons-material"
 import { UserAvatar } from "./UserAvatar"
 import { NavLink } from "react-router-dom"
 
-const pages = ["Products", "Pricing", "Blog"]
+const pages = ["Products", "Blog", "Posts"]
 
 export const TopPanel = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
