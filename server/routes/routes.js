@@ -66,7 +66,6 @@ router.post(
 		.bail()
 		.custom(async (value, { req }) => {
 			if (value !== req.body.passwordConfirm) {
-				console.log('There!')
 				throw new Error('Password confirmation is incorrect')
 			}
 		}),
@@ -107,8 +106,8 @@ router.get('/user', authUser, userCtrl.getUsers)
 /**
  * Posts routers
  */
-router.get('/posts', postCtrl.getPosts)
-router.get('/posts/:id', postCtrl.getPost)
+router.get('/posts', postCtrl.getAllPosts)
+router.get('/posts/:id', postCtrl.getOnePost)
 router.post('/posts', async (req, res) => { })
 router.put('/posts:id', async (req, res) => { })
 router.delete('/posts/:id', async (req, res) => { })

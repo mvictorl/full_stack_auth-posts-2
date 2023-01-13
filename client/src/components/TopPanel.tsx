@@ -14,7 +14,7 @@ import { Adb as AdbIcon, Menu as MenuIcon } from "@mui/icons-material"
 import { UserAvatar } from "./UserAvatar"
 import { NavLink } from "react-router-dom"
 
-const pages = ["Products", "Blog", "Posts"]
+const pages = ["Products", "Blog"]
 
 export const TopPanel = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
@@ -84,11 +84,28 @@ export const TopPanel = () => {
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
+              <MenuItem key="posts" onClick={handleCloseNavMenu}>
+                <Typography
+                  to="/posts"
+                  component={NavLink}
+                  sx={{
+                    textAlign: "center",
+                    textDecoration: "none",
+                    color: "inherit",
+                  }}
+                >
+                  Posts
+                </Typography>
+              </MenuItem>
               <MenuItem key="options" onClick={handleCloseNavMenu}>
                 <Typography
                   to="/options"
-                  textAlign="center"
                   component={NavLink}
+                  sx={{
+                    textAlign: "center",
+                    textDecoration: "none",
+                    color: "inherit",
+                  }}
                 >
                   Options
                 </Typography>
@@ -124,6 +141,15 @@ export const TopPanel = () => {
                 {page}
               </Button>
             ))}
+            <Button
+              key="posts"
+              onClick={handleCloseNavMenu}
+              to="/posts"
+              sx={{ my: 2, color: "white", display: "block" }}
+              component={NavLink}
+            >
+              Posts
+            </Button>
             <Button
               key="options"
               onClick={handleCloseNavMenu}

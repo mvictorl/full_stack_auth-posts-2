@@ -91,7 +91,6 @@ export const check = createAsyncThunk(
   async (_, { dispatch, rejectWithValue }) => {
     try {
       const data = await AuthService.check()
-
       if (!data.user || !data.accessToken) {
         localStorage.removeItem('bearer-token')
         throw Error('Server error on Login')
@@ -146,4 +145,5 @@ const authSlice = createSlice({
 })
 
 export default authSlice.reducer
-export const authState = (store: IRootState) => store.auth
+// export const authState = (store: IRootState) => store.auth
+export const selectCurrentUser = (state: IRootState) => state.auth.currentUser

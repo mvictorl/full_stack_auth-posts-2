@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const router = require('./routes/routes.js')
 const errorMiddleware = require('./middlewares/error-middleware')
+const { checkCookies } = require('./middlewares/auth-middleware')
 
 const dotenv = require('dotenv').config()
 const PORT = process.env.PORT || 5000
@@ -23,6 +24,7 @@ app.use(
 )
 
 app.use('/api', router)
+// app.use(checkCookies)
 app.use(errorMiddleware) // Error handler middleware (LAST!)
 
 /**
@@ -32,8 +34,7 @@ const startServer = () => {
 	try {
 		const server = app.listen(PORT, () =>
 			console.info(
-				`\x1b[33m\x1b[3m Web-server is running on port \x1b[31m${
-					server.address().port
+				`\x1b[33m\x1b[3m Web-server is running on port \x1b[31m${server.address().port
 				}\x1b[0m `
 			)
 		)

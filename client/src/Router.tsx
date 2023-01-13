@@ -1,10 +1,16 @@
+import { lazy, Suspense } from "react"
 import { createBrowserRouter } from "react-router-dom"
+import { Loader } from "./components/Loader"
 import ErrorPage from "./components/ErrorPage"
 import HomePage from "./components/HomePage"
-import Login from "./components/Login"
 import OptionsPage from "./components/OptionsPage"
-import Registeration from "./components/Registration"
 import { Root } from "./components/Root"
+import PostList from "./components/Posts/PostList"
+
+const Login = lazy(() => import("./components/Login"))
+const Registeration = lazy(() => import("./components/Registration"))
+const PostPage = lazy(() => import("./components/Posts/PostPage"))
+const PostView = lazy(() => import("./components/Posts/PostView"))
 
 export const Router = createBrowserRouter([
   {
@@ -22,11 +28,45 @@ export const Router = createBrowserRouter([
       },
       {
         path: "login",
-        element: <Login />,
+        element: (
+          <Suspense fallback={<Loader />}>
+            <Login />
+          </Suspense>
+        ),
       },
       {
         path: "register",
-        element: <Registeration />,
+        element: (
+          <Suspense fallback={<Loader />}>
+            <Registeration />
+          </Suspense>
+        ),
+      },
+      {
+        path: "posts",
+        element: (
+          <Suspense fallback={<Loader />}>
+            <PostPage />
+          </Suspense>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <Suspense fallback={<Loader />}>
+                <PostList />
+              </Suspense>
+            ),
+          },
+          {
+            path: ":id",
+            element: (
+              <Suspense fallback={<Loader />}>
+                <PostView />
+              </Suspense>
+            ),
+          },
+        ],
       },
     ],
   },

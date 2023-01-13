@@ -28,9 +28,9 @@ module.exports = class ApiError extends Error {
 		return new ApiError(401, 'User has no permissions')
 	}
 
-	// static UserActivationError() {
-	// 	return new ApiError(403, 'Account are not activated')
-	// }
+	static RefreshTokenError() {
+		return new ApiError(403, 'Wrong Refresh Token (cookie)')
+	}
 
 	static BadRequest(message) {
 		return new ApiError(422, message)

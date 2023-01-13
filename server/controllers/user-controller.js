@@ -83,20 +83,20 @@ class UserController {
 			const { refreshToken } = req.cookies // Take the 'refreshToken' token from cookie
 			if (refreshToken) {
 				// +++++++++++++++++++++++++++++++++++++++++++++++++++
-				// const userData = await userService.check(refreshToken)
-				const userData = await userService.refresh(refreshToken)
+				const userData = await userService.check(refreshToken)
+				// const userData = await userService.refresh(refreshToken)
 				if (userData) {
 					res.cookie('refreshToken', userData.refreshToken, {
 						httpOnly: true,
 						maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days as refresh token
 					})
 				} else {
-					const data = await userService.logout(refreshToken) // Call 'logout' service function
-					res.clearCookie('refreshToken') // Delete the 'refreshToken' cookie
+					// const data = await userService.logout(refreshToken) // Call 'logout' service function
+					res.status(304).clearCookie('refreshToken') // Delete the 'refreshToken' cookie
 				}
 				return res.json(userData)
 			}
-			return res.json({})
+			return res.status(304) //.json({})
 		} catch (e) {
 			next(e)
 		}
@@ -105,7 +105,6 @@ class UserController {
 	async activate(req, res, next) {
 		try {
 			const { code } = req.body
-			console.log('Activation Code:', code)
 			// const activationLink = req.params.link
 			const { refreshToken } = req.cookies
 			// await userService.activate(code, refreshToken)

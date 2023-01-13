@@ -38,6 +38,7 @@ $api.interceptors.response.use(
 				return $api(origRequest)
 			} catch (e) {
 				console.error('USER NOT AUTHORIZE', e)
+				localStorage.removeItem('bearer-token')
 			}
 		}
 		localStorage.removeItem('bearer-token')

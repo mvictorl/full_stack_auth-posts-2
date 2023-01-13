@@ -12,12 +12,13 @@ import {
 } from "@mui/material"
 import { Input as InputIcon } from "@mui/icons-material"
 import { useDispatch, useSelector } from "react-redux"
-import { authState, logout } from "../appstore/authSlice"
+import { logout, selectCurrentUser } from "../appstore/authSlice"
 import { AppDispatch } from "../appstore/store"
 import { name2letters } from "../helpers/name2letters"
 
 export const UserAvatar = () => {
-  const { currentUser } = useSelector(authState)
+  // const { currentUser } = useSelector(authState)
+  const currentUser = useSelector(selectCurrentUser)
   const dispatch: AppDispatch = useDispatch()
 
   const { pathname } = useLocation()

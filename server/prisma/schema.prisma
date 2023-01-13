@@ -61,8 +61,8 @@ model Comment {
   post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    String
   parent    Comment?      @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
-  children  Comment[]     @relation("ParentChild")
   parentId  String?
+  children  Comment[]     @relation("ParentChild")
   likes     CommentLike[]
 }
 
